@@ -8,11 +8,15 @@ import realApiService from '../services/realApiService';
 import websocketService from '../services/websocketService';
 import type { WebSocketStatus, WebSocketMessage } from '../types/websocket.types';
 
+type OutcomeType = 'mfa_needed' | 'success' | 'fail' | null;
+
 interface FormContextType {
   loading: boolean;
   error: string | null;
   wsStatus: WebSocketStatus;
   wsConnected: boolean;
+  outcome: OutcomeType;
+  outcomeData: any;
   submitForm: (data: any) => Promise<{ success: boolean; error?: string }>;
   connectWebSocket: (url?: string) => Promise<void>;
   disconnectWebSocket: () => void;
@@ -30,6 +34,8 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
   const [wsStatus, setWsStatus] = useState<WebSocketStatus>('disconnected');
   const [wsConnected, setWsConnected] = useState<boolean>(false);
+  const [outcome, setOutcome] = useState<OutcomeType>(null);
+  const [outcomeData, setOutcomeData] = useState<any>(null);
 
   /**
    * Initialize WebSocket listeners on mount
@@ -59,6 +65,27 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     console.log('Form context received WebSocket message:', message);
 
     switch (message.type) {
+      case 'mfa_needed':
+        console.log('MFA required:', message.payload);
+        setOutcome('mfa_needed');
+        setOutcomeData(message.payload);
+        setError(null);
+        break;
+
+      case 'success':
+        console.log('Registration successful:', message.payload);
+        setOutcome('success');
+        setOutcomeData(message.payload);
+        setError(null);
+        break;
+
+      case 'fail':
+        console.log('Registration failed:', message.payload);
+        setOutcome('fail');
+        setOutcomeData(message.payload);
+        setError(message.payload?.message || 'Registration failed');
+        break;
+
       case 'UPDATE_STATUS':
         console.log('Status update:', message.payload?.status);
         break;
@@ -151,6 +178,8 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     error,
     wsStatus,
     wsConnected,
+    outcome,
+    outcomeData,
     submitForm,
     connectWebSocket,
     disconnectWebSocket,

@@ -27,7 +27,7 @@ const RegisterForm: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const { loading, error, wsStatus, wsConnected, submitForm } = useForm();
+  const { loading, error, wsStatus, wsConnected, outcome, outcomeData, submitForm } = useForm();
 
   // Extract and store bearer token from URL query parameter
   useEffect(() => {
@@ -38,6 +38,20 @@ const RegisterForm: React.FC = () => {
       console.log('Bearer token extracted and stored from URL');
     }
   }, [searchParams]);
+
+  // Handle WebSocket outcome updates
+  useEffect(() => {
+    if (outcome === 'mfa_needed') {
+      setSubmitStatus('idle');
+      setStatusMessage('Multi-factor authentication required. Please check your device.');
+    } else if (outcome === 'success') {
+      setSubmitStatus('success');
+      setStatusMessage('Registration successful! Welcome to Jobstreet.');
+    } else if (outcome === 'fail') {
+      setSubmitStatus('error');
+      setStatusMessage(outcomeData?.message || 'Registration failed. Please try again.');
+    }
+  }, [outcome, outcomeData]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -168,6 +182,34 @@ const RegisterForm: React.FC = () => {
               </span>
             </div>
           </div>
+
+          {/* Outcome Display */}
+          {outcome && (
+            <div className={`outcome-box outcome-${outcome}`}>
+              {outcome === 'mfa_needed' && (
+                <div>
+                  <strong>🔐 MFA Required</strong>
+                  <p>Multi-factor authentication is needed. Please check your device or email for the verification code.</p>
+                </div>
+              )}
+              {outcome === 'success' && (
+                <div>
+                  <strong>✅ Success!</strong>
+                  <p>Your registration was successful. Welcome to Jobstreet!</p>
+                  {outcomeData?.redirectUrl && (
+                    <p>Redirecting you to {outcomeData.redirectUrl}...</p>
+                  )}
+                </div>
+              )}
+              {outcome === 'fail' && (
+                <div>
+                  <strong>❌ Registration Failed</strong>
+                  <p>{outcomeData?.message || 'Something went wrong. Please try again.'}</p>
+                  {outcomeData?.reason && <p>Reason: {outcomeData.reason}</p>}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="main-form">
