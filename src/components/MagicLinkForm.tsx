@@ -1,6 +1,7 @@
 /**
- * Magic Link Request Form Component
+ * Magic Link Request Form Component with WebSocket Support
  * Allows users to request a magic link for passwordless authentication
+ * Shows WebSocket connection status and API mode toggle
  */
 
 import React, { useState, FormEvent, ChangeEvent } from 'react';
@@ -13,7 +14,14 @@ const MagicLinkForm: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [status, setStatus] = useState<FormStatus>('idle');
   const [message, setMessage] = useState<string>('');
-  const { requestMagicLink, getLatestMagicLink } = useAuth();
+  const {
+    submitForm,
+    getLatestMagicLink,
+    wsStatus,
+    wsConnected,
+    useMockApi,
+    setUseMockApi
+  } = useAuth();
 
   const validateEmail = (email: string): boolean => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -40,7 +48,8 @@ const MagicLinkForm: React.FC = () => {
     setMessage('');
 
     try {
-      const result = await requestMagicLink(email);
+      // Use submitForm which will handle both API call and WebSocket connection
+      const result = await submitForm({ email });
 
       if (result.success) {
         setStatus('success');
@@ -48,7 +57,7 @@ const MagicLinkForm: React.FC = () => {
         // Get the generated magic link for demo
         const magicLink = getLatestMagicLink();
 
-        if (magicLink) {
+        if (magicLink && useMockApi) {
           setMessage(
             `Magic link sent! For this demo, click the link below:\n${magicLink.link}`
           );
@@ -56,6 +65,10 @@ const MagicLinkForm: React.FC = () => {
           setMessage(
             'Magic link sent! Please check your email and click the link to sign in. The link will expire in 15 minutes.'
           );
+
+          if (wsConnected) {
+            setMessage(prev => prev + '\n\nWebSocket connected - listening for server updates...');
+          }
         }
         setEmail('');
       } else {
@@ -76,7 +89,41 @@ const MagicLinkForm: React.FC = () => {
     }
   };
 
-  const magicLink = status === 'success' ? getLatestMagicLink() : null;
+  const handleModeToggle = () => {
+    setUseMockApi(!useMockApi);
+    setStatus('idle');
+    setMessage('');
+  };
+
+  const magicLink = status === 'success' && useMockApi ? getLatestMagicLink() : null;
+
+  const getWsStatusColor = () => {
+    switch (wsStatus) {
+      case 'connected':
+        return '#48bb78';
+      case 'connecting':
+        return '#ed8936';
+      case 'error':
+        return '#f56565';
+      default:
+        return '#a0aec0';
+    }
+  };
+
+  const getWsStatusText = () => {
+    switch (wsStatus) {
+      case 'connected':
+        return 'Connected';
+      case 'connecting':
+        return 'Connecting...';
+      case 'error':
+        return 'Error';
+      case 'closed':
+        return 'Closed';
+      default:
+        return 'Disconnected';
+    }
+  };
 
   return (
     <div className="magic-link-form-container">
@@ -86,6 +133,33 @@ const MagicLinkForm: React.FC = () => {
           <p className="form-subtitle">
             Enter your email to receive a magic link for instant, secure access
           </p>
+
+          {/* API Mode Toggle */}
+          <div className="api-mode-toggle">
+            <button
+              type="button"
+              onClick={handleModeToggle}
+              className={`mode-toggle-btn ${useMockApi ? 'mock' : 'real'}`}
+            >
+              <span className="mode-indicator"></span>
+              {useMockApi ? 'Mock API (Demo Mode)' : 'Real API + WebSocket'}
+            </button>
+          </div>
+
+          {/* WebSocket Status Indicator */}
+          {!useMockApi && (
+            <div className="ws-status-bar">
+              <div className="ws-status-indicator">
+                <div
+                  className="ws-status-dot"
+                  style={{ backgroundColor: getWsStatusColor() }}
+                ></div>
+                <span className="ws-status-text">
+                  WebSocket: {getWsStatusText()}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="magic-link-form">
@@ -182,16 +256,19 @@ const MagicLinkForm: React.FC = () => {
         </div>
 
         <div className="form-benefits">
-          <h3>Why Magic Links?</h3>
+          <h3>How It Works</h3>
           <ul>
             <li>
-              <strong>More Secure:</strong> No password to forget or get stolen
+              <strong>1. Submit Form:</strong> Enter your email and submit
             </li>
             <li>
-              <strong>Faster Login:</strong> One click to authenticate
+              <strong>2. API Call:</strong> {useMockApi ? 'Simulated API request' : 'Real API request to backend'}
             </li>
             <li>
-              <strong>Works Everywhere:</strong> Access from any device with email
+              <strong>3. WebSocket:</strong> {useMockApi ? 'Not used in demo mode' : 'Connection established on success'}
+            </li>
+            <li>
+              <strong>4. Server Updates:</strong> {useMockApi ? 'Simulated locally' : 'Received via WebSocket'}
             </li>
           </ul>
         </div>

@@ -8,6 +8,12 @@ interface ApiConfig {
   timeout: number;
 }
 
+interface WebSocketConfig {
+  url: string;
+  reconnectInterval: number;
+  maxReconnectAttempts: number;
+}
+
 interface OAuthConfig {
   clientId: string;
   redirectUri: string;
@@ -19,6 +25,7 @@ interface MagicLinkConfig {
 
 interface Config {
   api: ApiConfig;
+  websocket: WebSocketConfig;
   oauth: OAuthConfig;
   magicLink: MagicLinkConfig;
 }
@@ -35,6 +42,11 @@ export const config: Config = {
   api: {
     baseURL: getEnvVar('VITE_API_BASE_URL', 'http://localhost:8080'),
     timeout: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000'), 10),
+  },
+  websocket: {
+    url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws'),
+    reconnectInterval: 3000, // 3 seconds
+    maxReconnectAttempts: 5,
   },
   oauth: {
     clientId: getEnvVar('VITE_OAUTH_CLIENT_ID', 'magic-link-client'),

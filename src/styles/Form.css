@@ -258,3 +258,85 @@
     font-size: 1.75rem;
   }
 }
+
+/* API Mode Toggle */
+.api-mode-toggle {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.mode-toggle-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mode-toggle-btn:hover {
+  border-color: #667eea;
+  background: #f7fafc;
+}
+
+.mode-toggle-btn.mock {
+  color: #2d3748;
+}
+
+.mode-toggle-btn.real {
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.mode-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+
+/* WebSocket Status Indicator */
+.ws-status-bar {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.ws-status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.ws-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.ws-status-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
