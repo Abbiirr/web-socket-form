@@ -1,26 +1,30 @@
 /**
  * Main App Component
- * Simple routing for form submission
+ * Multi-page flow: Welcome → Registration
  */
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { FormProvider } from './contexts/FormContext';
-import Form from './components/Form';
+import Welcome from './components/Welcome';
+import RegisterForm from './components/RegisterForm';
 
 const App: React.FC = () => {
   return (
     <Router>
       <FormProvider>
         <Routes>
-          {/* Main form route */}
-          <Route path="/form" element={<Form />} />
+          {/* Welcome page */}
+          <Route path="/welcome" element={<Welcome />} />
 
-          {/* Redirect root to form */}
-          <Route path="/" element={<Navigate to="/form" replace />} />
+          {/* Registration form */}
+          <Route path="/register" element={<RegisterForm />} />
 
-          {/* Catch all - redirect to form */}
-          <Route path="*" element={<Navigate to="/form" replace />} />
+          {/* Redirect root to welcome */}
+          <Route path="/" element={<Navigate to="/welcome" replace />} />
+
+          {/* Catch all - redirect to welcome */}
+          <Route path="*" element={<Navigate to="/welcome" replace />} />
         </Routes>
       </FormProvider>
     </Router>

@@ -130,6 +130,46 @@
   min-height: 100px;
 }
 
+/* Password Input with Toggle */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-input {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: #667eea;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.form-hint {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #718096;
+}
+
 .form-message {
   padding: 1rem;
   border-radius: 8px;
@@ -198,6 +238,14 @@
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.terms-text {
+  font-size: 0.85rem;
+  color: #718096;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .info-box {
