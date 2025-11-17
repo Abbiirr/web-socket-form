@@ -1,10 +1,13 @@
 /**
  * Registration Form Component
  * Jobstreet registration with name, email, password
+ * Supports token-based authentication via URL query parameter
  */
 
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useForm } from '../contexts/FormContext';
+import tokenService from '../services/tokenService';
 import '../styles/Form.css';
 
 interface RegistrationData {
@@ -14,6 +17,7 @@ interface RegistrationData {
 }
 
 const RegisterForm: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState<RegistrationData>({
     name: '',
     email: '',
@@ -24,6 +28,16 @@ const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const { loading, error, wsStatus, wsConnected, submitForm } = useForm();
+
+  // Extract and store bearer token from URL query parameter
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      // Store the bearer token for authentication
+      tokenService.setTokens({ accessToken: token });
+      console.log('Bearer token extracted and stored from URL');
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

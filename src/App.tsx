@@ -20,6 +20,9 @@ const App: React.FC = () => {
           {/* Registration form */}
           <Route path="/register" element={<RegisterForm />} />
 
+          {/* Direct form access with token (e.g., /form?token=xxx) */}
+          <Route path="/form" element={<RegisterForm />} />
+
           {/* Redirect root to welcome */}
           <Route path="/" element={<Navigate to="/welcome" replace />} />
 
