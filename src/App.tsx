@@ -1,43 +1,28 @@
 /**
  * Main App Component
- * Sets up routing and authentication context
+ * Simple routing for form submission
  */
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-
-// Components
-import Home from './components/Home';
-import MagicLinkForm from './components/MagicLinkForm';
-import MagicLinkVerify from './components/MagicLinkVerify';
-import Dashboard from './components/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
+import { FormProvider } from './contexts/FormContext';
+import Form from './components/Form';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <AuthProvider>
+      <FormProvider>
         <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<MagicLinkForm />} />
-          <Route path="/auth/callback" element={<MagicLinkVerify />} />
+          {/* Main form route */}
+          <Route path="/form" element={<Form />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          {/* Redirect root to form */}
+          <Route path="/" element={<Navigate to="/form" replace />} />
 
-          {/* Catch all - redirect to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Catch all - redirect to form */}
+          <Route path="*" element={<Navigate to="/form" replace />} />
         </Routes>
-      </AuthProvider>
+      </FormProvider>
     </Router>
   );
 };

@@ -97,8 +97,6 @@ class RealApiService {
     try {
       const response = await this.client.post('/api/auth/magic-link/request', {
         email,
-        clientId: config.oauth.clientId,
-        redirectUri: config.oauth.redirectUri,
       });
       return response.data;
     } catch (error) {
@@ -113,7 +111,6 @@ class RealApiService {
     try {
       const response = await this.client.post('/api/auth/magic-link/verify', {
         token,
-        clientId: config.oauth.clientId,
       });
       return response.data;
     } catch (error) {
@@ -128,7 +125,6 @@ class RealApiService {
     try {
       const response = await this.client.post('/api/auth/refresh', {
         refreshToken,
-        clientId: config.oauth.clientId,
       });
       return response.data;
     } catch (error) {

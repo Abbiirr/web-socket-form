@@ -1,72 +1,66 @@
-# Magic Link Authentication with WebSocket Support - React TypeScript App
+# Form Submission with WebSocket - React TypeScript App
 
-A modern, production-ready React application demonstrating magic link authentication with OAuth2 best practices and **WebSocket integration**. Features both **mock** (pure frontend) and **real API** modes with WebSocket connections.
+A simple, focused React application for form submission with real-time WebSocket communication. When a user submits a form, it makes an API call and establishes a WebSocket connection to receive server updates.
 
 ## Features
 
-- ✨ **Passwordless Authentication**: Secure magic link-based authentication
-- 🔐 **OAuth2 Best Practices**: Implements industry-standard OAuth2 patterns
-- 🔌 **WebSocket Integration**: Real-time server communication after form submission
-- 🎭 **Dual Mode**: Mock API (demo) or Real API + WebSocket
+- 📝 **Simple Form**: Clean form interface for data submission
+- 🔌 **WebSocket Integration**: Automatic WebSocket connection after successful API call
+- 🎯 **Single Purpose**: Focused on form submission only
 - 📘 **TypeScript**: Fully typed for better development experience
-- ⚛️ **Modern React**: Built with React 18 and functional components
-- 📱 **Responsive Design**: Beautiful UI that works on all devices
-- 🛡️ **Protected Routes**: Route guards for authenticated content
-- 🎫 **Token Management**: Secure JWT token handling with automatic expiration
+- ⚛️ **React 18**: Modern React with hooks
+- 🎨 **Responsive Design**: Works on all devices
+- 🔄 **Auto-reconnect**: WebSocket reconnects automatically on disconnect
 
 ## Tech Stack
 
-- **React 18**: Latest React with hooks and concurrent features
-- **TypeScript**: Type-safe code with excellent IDE support
-- **Vite**: Lightning-fast build tool and dev server
-- **React Router v6**: Modern routing
-- **Axios**: Promise-based HTTP client
-- **WebSocket**: Native WebSocket API with reconnection logic
-- **jwt-decode**: JWT token decoding and validation
-- **CSS3**: Modern styling with animations
+- **React 18**: Latest React with hooks
+- **TypeScript**: Type-safe code
+- **Vite**: Lightning-fast build tool
+- **React Router v6**: Client-side routing
+- **Axios**: HTTP client for API calls
+- **WebSocket**: Native WebSocket with reconnection logic
+- **CSS3**: Modern styling
 
 ## Project Structure
 
 ```
 web-socket-form/
 ├── src/
-│   ├── components/          # React components
-│   │   ├── Dashboard.tsx    # Protected dashboard
-│   │   ├── Home.tsx         # Landing page
-│   │   ├── MagicLinkForm.tsx       # Login form with WS indicator
-│   │   ├── MagicLinkVerify.tsx     # Token verification
-│   │   └── ProtectedRoute.tsx      # Route guard
-│   ├── contexts/            # React contexts
-│   │   └── AuthContext.tsx  # Auth state + WebSocket integration
-│   ├── services/            # Business logic
-│   │   ├── mockAuthService.ts      # Mock auth API
-│   │   ├── realApiService.ts       # Real HTTP API client
-│   │   ├── websocketService.ts     # WebSocket manager
-│   │   └── tokenService.ts         # Token management
-│   ├── types/               # TypeScript types
-│   │   ├── auth.types.ts    # Auth interfaces
-│   │   ├── api.types.ts     # API interfaces
-│   │   └── websocket.types.ts      # WebSocket interfaces
-│   ├── styles/              # CSS stylesheets
-│   ├── config/              # Configuration
-│   │   └── env.ts           # Environment variables
-│   ├── App.tsx              # Main app component
-│   └── main.tsx             # Entry point
-├── package.json             # Dependencies
-├── tsconfig.json            # TypeScript config
-├── vite.config.ts           # Vite config
-└── README.md                # This file
+│   ├── components/
+│   │   └── Form.tsx                 # Main form component
+│   ├── contexts/
+│   │   └── FormContext.tsx          # Form state + WebSocket management
+│   ├── services/
+│   │   ├── realApiService.ts        # HTTP API client
+│   │   ├── websocketService.ts      # WebSocket manager
+│   │   └── tokenService.ts          # Token storage/management
+│   ├── types/
+│   │   └── websocket.types.ts       # WebSocket TypeScript types
+│   ├── styles/
+│   │   ├── Form.css                 # Form styles
+│   │   └── index.css                # Global styles
+│   ├── config/
+│   │   └── env.ts                   # Environment config
+│   ├── App.tsx                      # Main app with routing
+│   └── main.tsx                     # Entry point
+├── .env                             # Environment variables
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm/yarn/pnpm
+- Node.js 18+
+- Backend API server (for form submission)
+- WebSocket server (for real-time updates)
 
 ### Installation
 
-1. **Navigate to the repository**:
+1. **Navigate to project**:
    ```bash
    cd web-socket-form
    ```
@@ -76,33 +70,28 @@ web-socket-form/
    npm install
    ```
 
-3. **Configure environment** (optional):
+3. **Configure environment**:
    ```bash
-   cp .env.example .env
-   # Edit .env with your API and WebSocket URLs
+   # Edit .env file
+   VITE_API_BASE_URL=http://localhost:8080
+   VITE_WS_URL=ws://localhost:8080/ws
    ```
 
-4. **Start the development server**:
+4. **Start development server**:
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**:
-   Navigate to `http://localhost:3000`
+5. **Open browser**:
+   Navigate to `http://localhost:3000` → redirects to `/form`
 
-### Building for Production
+### Build for Production
 
 ```bash
 npm run build
 ```
 
-The built files will be in the `dist/` directory.
-
-### Preview Production Build
-
-```bash
-npm run preview
-```
+Built files in `dist/` directory.
 
 ## Configuration
 
@@ -115,122 +104,60 @@ VITE_API_TIMEOUT=30000
 
 # WebSocket Configuration
 VITE_WS_URL=ws://localhost:8080/ws
-
-# OAuth2 Configuration
-VITE_OAUTH_CLIENT_ID=magic-link-client
-VITE_OAUTH_REDIRECT_URI=http://localhost:3000/auth/callback
-
-# Magic Link Configuration
-VITE_MAGIC_LINK_EXPIRY=900000
 ```
 
 ## How It Works
 
-### Dual Mode Architecture
-
-The app supports two modes (toggle via button in the UI):
-
-#### 1. Mock API Mode (Default - Pure Frontend)
-- All authentication simulated in browser
-- No backend required
-- Perfect for demos and testing
-- Magic links displayed on screen
-- No WebSocket connection
-
-#### 2. Real API + WebSocket Mode
-- Makes actual HTTP requests to backend
-- Establishes WebSocket connection on success
-- Receives real-time updates from server
-- Production-ready architecture
-
-### Authentication Flow
-
-#### Standard Flow (Mock Mode):
-1. **Request Magic Link**:
-   - User enters email
-   - Token generated and stored in localStorage
-   - Link displayed on screen (simulates email)
-
-2. **Click Magic Link**:
-   - Token verified from localStorage
-   - JWT tokens generated and stored
-   - Redirect to dashboard
-
-#### Real API + WebSocket Flow:
+### Form Submission Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 1. FORM SUBMISSION                                          │
-│    User enters email → submitForm() called                  │
+│ 1. USER FILLS FORM                                          │
+│    - Email, Name, Message fields                            │
+│    - Click "Submit Form" button                             │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 2. HTTP API CALL                                            │
 │    POST /api/submit                                         │
-│    { email: "user@example.com" }                            │
+│    { email, name, message }                                 │
+│    (Token auto-added from localStorage if exists)           │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 3. API RESPONSE                                             │
-│    { success: true, message: "Magic link sent" }            │
+│    { success: true, ... }                                   │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ 4. WEBSOCKET CONNECTION                                     │
 │    ws://localhost:8080/ws                                   │
-│    Status: connecting → connected                           │
+│    Status: disconnected → connecting → connected            │
 └────────────────┬────────────────────────────────────────────┘
                  │
                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 5. SERVER SENDS MESSAGES                                    │
-│    { type: "MAGIC_LINK_SENT", payload: {...} }             │
-│    { type: "UPDATE_STATUS", payload: {...} }               │
-│    { type: "REDIRECT", payload: {url: "/dashboard"} }       │
+│ 5. LISTEN FOR SERVER MESSAGES                               │
+│    Real-time updates from server via WebSocket              │
+│    { type: "UPDATE_STATUS", payload: {...} }                │
+│    { type: "REDIRECT", payload: {url: "/success"} }         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### WebSocket Message Types
 
-The app handles these WebSocket message types:
+The app handles these message types from the server:
 
 ```typescript
-// Authentication success with token
-{
-  type: "AUTH_SUCCESS",
-  payload: {
-    token: "jwt_token_here",
-    refreshToken: "refresh_token",
-    expiresIn: 3600
-  }
-}
-
-// Authentication failed
-{
-  type: "AUTH_FAILED",
-  payload: {
-    message: "Invalid credentials"
-  }
-}
-
-// Magic link sent confirmation
-{
-  type: "MAGIC_LINK_SENT",
-  payload: {
-    email: "user@example.com",
-    expiresIn: 900
-  }
-}
-
 // Status update
 {
   type: "UPDATE_STATUS",
   payload: {
     status: "processing",
-    message: "Verifying email..."
+    message: "Processing your form..."
   }
 }
 
@@ -238,7 +165,7 @@ The app handles these WebSocket message types:
 {
   type: "REDIRECT",
   payload: {
-    url: "/dashboard",
+    url: "/success",
     delay: 1000  // optional delay in ms
   }
 }
@@ -247,8 +174,7 @@ The app handles these WebSocket message types:
 {
   type: "ERROR",
   payload: {
-    code: "INVALID_TOKEN",
-    message: "Token has expired"
+    message: "An error occurred"
   }
 }
 ```
@@ -256,129 +182,129 @@ The app handles these WebSocket message types:
 ### WebSocket Service Features
 
 - **Automatic Reconnection**: Reconnects on disconnect with exponential backoff
-- **Max Reconnect Attempts**: Configurable (default: 5)
+- **Max Reconnect Attempts**: 5 attempts (configurable)
 - **Reconnect Interval**: 3 seconds between attempts
-- **Status Tracking**: disconnected → connecting → connected → error/closed
-- **Message Handlers**: Subscribe to WebSocket messages
-- **Cleanup**: Proper cleanup on unmount
+- **Status Tracking**: `disconnected` → `connecting` → `connected` → `error`/`closed`
+- **Message Handlers**: Subscribe to incoming messages
+- **Auto Cleanup**: Proper cleanup on component unmount
 
-### API Service Features
+## Backend Requirements
 
-- **Axios-based**: Professional HTTP client
-- **Token Interceptors**: Automatically adds JWT to requests
-- **Auto Token Refresh**: Refreshes expired tokens automatically
-- **Error Handling**: Comprehensive error messages
-- **TypeScript**: Fully typed requests and responses
+Your backend needs to implement:
 
-## Integrating with Your Backend
+### HTTP Endpoint
 
-### 1. Update Environment Variables
+```
+POST /api/submit
+Content-Type: application/json
+Authorization: Bearer <token>  (if token exists in localStorage)
 
-```env
-VITE_API_BASE_URL=https://your-api.com
-VITE_WS_URL=wss://your-api.com/ws
+Request Body:
+{
+  "email": "user@example.com",
+  "name": "John Doe",
+  "message": "Hello world"
+}
+
+Response:
+{
+  "success": true,
+  "id": "12345",
+  "message": "Form submitted successfully"
+}
 ```
 
-### 2. Implement Backend Endpoints
+### WebSocket Endpoint
 
-Your backend should implement:
+```
+WebSocket: ws://your-server.com/ws
 
-#### HTTP Endpoints:
-- `POST /api/submit` - Main form submission endpoint
-- `POST /api/auth/magic-link/request` - Request magic link
-- `POST /api/auth/magic-link/verify` - Verify magic link token
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/logout` - Logout
-- `GET /api/user/profile` - Get user profile
+Messages from server:
+{
+  "type": "UPDATE_STATUS",
+  "payload": { "status": "processing", "message": "..." }
+}
 
-#### WebSocket Endpoint:
-- `ws://your-api.com/ws` - WebSocket connection
+{
+  "type": "REDIRECT",
+  "payload": { "url": "/success", "delay": 1000 }
+}
 
-### 3. WebSocket Server Implementation
+{
+  "type": "ERROR",
+  "payload": { "message": "Error message" }
+}
+```
 
-Your WebSocket server should:
+## Example Backend (Node.js)
 
 ```javascript
-// Example Node.js WebSocket server
+const express = require('express');
 const WebSocket = require('ws');
+const app = express();
+
+app.use(express.json());
+
+// Form submission endpoint
+app.post('/api/submit', (req, res) => {
+  const { email, name, message } = req.body;
+
+  // Process form data
+  console.log('Form submitted:', { email, name, message });
+
+  res.json({
+    success: true,
+    id: Date.now().toString(),
+    message: 'Form submitted successfully'
+  });
+});
+
+// WebSocket server
 const wss = new WebSocket.Server({ port: 8080, path: '/ws' });
 
 wss.on('connection', (ws) => {
   console.log('Client connected');
 
-  // Send welcome message
-  ws.send(JSON.stringify({
-    type: 'CONNECTED',
-    payload: { message: 'WebSocket connected' }
-  }));
-
-  // Handle messages from client
-  ws.on('message', (message) => {
-    const data = JSON.parse(message);
-    console.log('Received:', data);
-
-    // Process based on message type
-    switch (data.type) {
-      case 'PING':
-        ws.send(JSON.stringify({ type: 'PONG' }));
-        break;
-      // Handle other message types
-    }
-  });
-
-  // Send updates to client
+  // Send status update
   setTimeout(() => {
     ws.send(JSON.stringify({
-      type: 'MAGIC_LINK_SENT',
-      payload: { email: 'user@example.com' }
+      type: 'UPDATE_STATUS',
+      payload: { status: 'processing', message: 'Processing your form...' }
     }));
   }, 1000);
+
+  // Send redirect after processing
+  setTimeout(() => {
+    ws.send(JSON.stringify({
+      type: 'REDIRECT',
+      payload: { url: '/success', delay: 500 }
+    }));
+  }, 3000);
 });
+
+app.listen(8080, () => console.log('Server running on port 8080'));
 ```
 
-### 4. Toggle to Real API Mode
+## API Service Usage
 
-In the app UI:
-1. Click the "Mock API (Demo Mode)" button
-2. It will switch to "Real API + WebSocket"
-3. The app will now make real HTTP calls and WebSocket connections
+```typescript
+import realApiService from './services/realApiService';
 
-## Security Considerations
+// Submit form
+const result = await realApiService.submitForm({
+  email: 'user@example.com',
+  name: 'John Doe',
+  message: 'Hello'
+});
 
-### Current Implementation
+// Make GET request
+const data = await realApiService.get('/api/endpoint');
 
-**Mock Mode:**
-- Tokens stored in localStorage (acceptable for demos)
-- Magic links displayed on screen
-- No backend required
+// Make POST request
+const response = await realApiService.post('/api/endpoint', { data });
+```
 
-**Real API Mode:**
-- HTTP-only recommended for production
-- CSRF protection recommended
-- Rate limiting on backend
-- HTTPS/WSS in production
-
-### Production Recommendations
-
-1. **Use HTTP-only Cookies**: Store tokens in HTTP-only cookies
-2. **Implement CSRF Protection**: Use CSRF tokens
-3. **Add Rate Limiting**: Prevent abuse
-4. **Secure WebSocket**: Use WSS (WebSocket Secure) in production
-5. **Validate Messages**: Validate all WebSocket messages on server
-6. **Authentication**: Authenticate WebSocket connections
-7. **HTTPS Only**: Always use HTTPS in production
-8. **Content Security Policy**: Implement CSP headers
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run type-check` - Run TypeScript type checking
-
-## WebSocket API Reference
-
-### Connecting to WebSocket
+## WebSocket Service Usage
 
 ```typescript
 import websocketService from './services/websocketService';
@@ -391,7 +317,7 @@ const unsubscribe = websocketService.onMessage((message) => {
   console.log('Received:', message);
 });
 
-// Send message
+// Send message to server
 websocketService.send({
   type: 'PING',
   payload: {}
@@ -404,35 +330,74 @@ websocketService.disconnect();
 unsubscribe();
 ```
 
-### Using with Auth Context
+## Token Handling
+
+If a token exists in `localStorage` under the key `'auth_token'`, it will be automatically attached to all API requests as a Bearer token:
+
+```
+Authorization: Bearer <token>
+```
+
+You can set a token from another application:
+
+```javascript
+// In another app or page
+localStorage.setItem('auth_token', 'your-jwt-token-here');
+
+// Then navigate to this form app
+window.location.href = 'http://localhost:3000/form';
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run type-check` - Run TypeScript type checking
+
+## Customizing the Form
+
+Edit `src/components/Form.tsx` to add/remove fields:
 
 ```typescript
-const {
-  wsStatus,        // Current WebSocket status
-  wsConnected,     // Boolean: is connected
-  connectWebSocket,    // Function to connect
-  disconnectWebSocket, // Function to disconnect
-  sendWebSocketMessage // Function to send message
-} = useAuth();
-
-// Connect
-await connectWebSocket();
-
-// Send message
-sendWebSocketMessage({
-  type: 'CUSTOM',
-  payload: { data: 'hello' }
+const [formData, setFormData] = useState({
+  email: '',
+  name: '',
+  message: '',
+  // Add more fields here
+  customField: '',
 });
 ```
 
+## Styling
+
+- Main styles: `src/styles/Form.css`
+- Global styles: `src/styles/index.css`
+- Modify gradient background, colors, etc. in CSS files
+
+## Security Notes
+
+- Tokens stored in `localStorage` (consider HTTP-only cookies for production)
+- CORS must be configured on backend for your frontend origin
+- Use HTTPS/WSS in production
+- Validate all form inputs on backend
+- Implement rate limiting on backend
+
 ## Troubleshooting
 
-### WebSocket Connection Failed
+### WebSocket Won't Connect
 
 1. Check backend is running
 2. Verify `VITE_WS_URL` in `.env`
 3. Check browser console for errors
-4. Ensure backend WebSocket server is on correct path
+4. Ensure WebSocket path matches server
+
+### Form Submission Fails
+
+1. Check API endpoint is correct
+2. Verify CORS headers on backend
+3. Check network tab in browser DevTools
+4. Ensure backend is running
 
 ### Build Errors
 
@@ -446,18 +411,6 @@ npm run type-check
 
 # Build
 npm run build
-```
-
-### CORS Issues
-
-Configure your backend to allow requests from your frontend origin:
-
-```javascript
-// Express example
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true
-}));
 ```
 
 ## Browser Support
@@ -474,14 +427,8 @@ MIT
 
 ## Contributing
 
-Feel free to submit issues and enhancement requests!
-
-## Acknowledgments
-
-- Built with React, TypeScript, and WebSocket
-- Inspired by modern authentication best practices
-- Follows OAuth2 and OpenID Connect standards
+Feel free to submit issues and pull requests!
 
 ---
 
-**Note**: This demonstrates both mock (frontend-only) and real (backend + WebSocket) implementations. For production, use Real API mode with proper backend security.
+**Simple. Focused. Just a form with WebSocket.**

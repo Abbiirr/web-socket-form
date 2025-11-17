@@ -14,20 +14,9 @@ interface WebSocketConfig {
   maxReconnectAttempts: number;
 }
 
-interface OAuthConfig {
-  clientId: string;
-  redirectUri: string;
-}
-
-interface MagicLinkConfig {
-  expiry: number;
-}
-
 interface Config {
   api: ApiConfig;
   websocket: WebSocketConfig;
-  oauth: OAuthConfig;
-  magicLink: MagicLinkConfig;
 }
 
 const getEnvVar = (key: string, defaultValue: string = ''): string => {
@@ -47,13 +36,6 @@ export const config: Config = {
     url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws'),
     reconnectInterval: 3000, // 3 seconds
     maxReconnectAttempts: 5,
-  },
-  oauth: {
-    clientId: getEnvVar('VITE_OAUTH_CLIENT_ID', 'magic-link-client'),
-    redirectUri: getEnvVar('VITE_OAUTH_REDIRECT_URI', 'http://localhost:3000/auth/callback'),
-  },
-  magicLink: {
-    expiry: parseInt(getEnvVar('VITE_MAGIC_LINK_EXPIRY', '900000'), 10), // 15 minutes
   },
 };
 

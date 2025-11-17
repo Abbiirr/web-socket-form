@@ -5,7 +5,30 @@
  */
 
 import { jwtDecode } from 'jwt-decode';
-import type { TokenData, DecodedToken, UserInfo } from '../types/auth.types';
+
+interface TokenData {
+  accessToken: string;
+  refreshToken?: string;
+  expiresIn?: number;
+}
+
+interface DecodedToken {
+  exp: number;
+  iat?: number;
+  sub?: string;
+  email?: string;
+  user_id?: string;
+  userId?: string;
+  roles?: string[];
+  [key: string]: any;
+}
+
+interface UserInfo {
+  email: string;
+  userId: string;
+  roles: string[];
+  [key: string]: any;
+}
 
 const TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
