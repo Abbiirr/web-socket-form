@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useForm } from '../contexts/FormContext';
 import tokenService from '../services/tokenService';
 import '../styles/Form.css';
@@ -19,6 +19,7 @@ interface RegistrationData {
 }
 
 const RegisterForm: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState<RegistrationData>({
     name: '',
@@ -114,21 +115,8 @@ const RegisterForm: React.FC = () => {
       const result = await submitForm(formData);
 
       if (result.success) {
-        setSubmitStatus('success');
-        setStatusMessage('Registration successful!');
-
-        if (wsConnected) {
-          setStatusMessage('Registration successful! Connected - waiting for server updates...');
-        }
-
-        // Reset form
-        setFormData({
-          name: '',
-          username: '',
-          password: '',
-          teamName: '',
-          teamId: '',
-        });
+        // Navigate to loading page
+        navigate('/loading');
       } else {
         setSubmitStatus('error');
         setStatusMessage(result.error || 'Registration failed. Please try again.');
