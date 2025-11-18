@@ -153,7 +153,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       const wsConnected = await websocketService.connectWithStatusCheck(
         integrationId,
         (id: string) => realApiService.checkIntegrationStatus(id),
-        'ws://localhost:8080/ws',
+        'ws://localhost:8080/ws/register',
         10,
         30000
       );

@@ -33,7 +33,7 @@ export const config: Config = {
     timeout: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000'), 10),
   },
   websocket: {
-    url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws'),
+    url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws/register'),
     reconnectInterval: 3000, // 3 seconds
     maxReconnectAttempts: 10,
   },
