@@ -3,10 +3,10 @@
  * Displays a loading state while waiting for WebSocket updates
  */
 
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from '../contexts/FormContext';
-import '../styles/Loading.css';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "../contexts/FormContext";
+import "../styles/Loading.css";
 
 const Loading: React.FC = () => {
   const navigate = useNavigate();
@@ -14,46 +14,46 @@ const Loading: React.FC = () => {
 
   // Handle WebSocket outcome updates
   useEffect(() => {
-    if (outcome === 'success') {
+    if (outcome === "success") {
       // Navigate to success page
-      console.log('Registration successful!', outcomeData);
-      navigate('/success');
-    } else if (outcome === 'fail') {
+      console.log("Registration successful!", outcomeData);
+      navigate("/success");
+    } else if (outcome === "fail") {
       // Navigate to fail page
-      console.log('Registration failed:', outcomeData);
-      navigate('/fail');
-    } else if (outcome === 'mfa_needed') {
+      console.log("Registration failed:", outcomeData);
+      navigate("/fail");
+    } else if (outcome === "mfa_needed") {
       // Navigate to MFA page (websocket stays open)
-      console.log('MFA required:', outcomeData);
-      navigate('/mfa');
+      console.log("MFA required:", outcomeData);
+      navigate("/mfa");
     }
   }, [outcome, outcomeData, navigate]);
 
   const getWsStatusColor = () => {
     switch (wsStatus) {
-      case 'connected':
-        return '#48bb78';
-      case 'connecting':
-        return '#ed8936';
-      case 'error':
-        return '#f56565';
+      case "connected":
+        return "#48bb78";
+      case "connecting":
+        return "#ed8936";
+      case "error":
+        return "#f56565";
       default:
-        return '#a0aec0';
+        return "#a0aec0";
     }
   };
 
   const getWsStatusText = () => {
     switch (wsStatus) {
-      case 'connected':
-        return 'Connected';
-      case 'connecting':
-        return 'Connecting...';
-      case 'error':
-        return 'Error';
-      case 'closed':
-        return 'Closed';
+      case "connected":
+        return "Connected";
+      case "connecting":
+        return "Connecting...";
+      case "error":
+        return "Error";
+      case "closed":
+        return "Closed";
       default:
-        return 'Disconnected';
+        return "Disconnected";
     }
   };
 
@@ -69,7 +69,8 @@ const Loading: React.FC = () => {
           {/* Loading Message */}
           <h1 className="loading-title">Processing Your Request</h1>
           <p className="loading-subtitle">
-            Please wait while we verify your credentials and set up your account...
+            Please wait while we verify your credentials and set up your
+            account...
           </p>
 
           {/* WebSocket Status Indicator */}
@@ -88,13 +89,16 @@ const Loading: React.FC = () => {
           {/* Outcome Display */}
           {outcome && (
             <div className={`outcome-box outcome-${outcome}`}>
-              {outcome === 'mfa_needed' && (
+              {outcome === "mfa_needed" && (
                 <div>
                   <strong>🔐 MFA Required</strong>
-                  <p>Multi-factor authentication is needed. Please check your device or email for the verification code.</p>
+                  <p>
+                    Multi-factor authentication is needed. Please check your
+                    device or email for the verification code.
+                  </p>
                 </div>
               )}
-              {outcome === 'success' && (
+              {outcome === "success" && (
                 <div>
                   <strong>✅ Success!</strong>
                   <p>Your registration was successful. Welcome to Jobstreet!</p>
@@ -103,14 +107,17 @@ const Loading: React.FC = () => {
                   )}
                 </div>
               )}
-              {outcome === 'fail' && (
+              {outcome === "fail" && (
                 <div>
                   <strong>❌ Registration Failed</strong>
-                  <p>{outcomeData?.message || 'Something went wrong. Please try again.'}</p>
+                  <p>
+                    {outcomeData?.message ||
+                      "Something went wrong. Please try again."}
+                  </p>
                   {outcomeData?.reason && <p>Reason: {outcomeData.reason}</p>}
                   <button
                     className="back-button"
-                    onClick={() => navigate('/register')}
+                    onClick={() => navigate("/register")}
                   >
                     Back to Form
                   </button>
@@ -131,10 +138,6 @@ const Loading: React.FC = () => {
                   <div className="step-spinner"></div>
                 </div>
                 <span>Verifying credentials with Jobstreet</span>
-              </div>
-              <div className="step-item pending">
-                <div className="step-icon">○</div>
-                <span>Establishing secure connection</span>
               </div>
               <div className="step-item pending">
                 <div className="step-icon">○</div>
