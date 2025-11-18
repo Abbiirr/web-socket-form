@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Verification Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Integration Verification</h1>
+
+        <form id="integrationForm">
+            <div class="form-group">
+                <label for="platform">Platform:</label>
+                <input type="text" id="platform" name="platform" value="jobstreet" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="strategy">Strategy:</label>
+                <input type="text" id="strategy" name="strategy" value="USERNAME_PASSWORD" readonly>
+            </div>
+
+            <h3>Platform Metadata</h3>
+
+            <div class="form-group">
+                <label for="username">Username/Email:</label>
+                <input type="email" id="username" name="username" value="abdullah.noman@brainstation-23.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" value="Fintech@bs23" required>
+            </div>
+
+            <div class="form-group">
+                <label for="teamName">Team Name:</label>
+                <input type="text" id="teamName" name="teamName" value="REVO GLOBAL SDN. BHD." required>
+            </div>
+
+            <div class="form-group">
+                <label for="teamId">Team ID:</label>
+                <input type="text" id="teamId" name="teamId" value="62541561" required>
+            </div>
+
+            <h3>Strategy Metadata</h3>
+
+            <div class="form-group">
+                <label for="loginUrl">Login URL:</label>
+                <input type="url" id="loginUrl" name="loginUrl" value="https://my.employer.seek.com/dashboard" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="3" required>Login using JobStreet employer account username & password</textarea>
+            </div>
+
+            <h3>Authentication</h3>
+
+            <div class="form-group">
+                <label for="xSubject">X-Subject:</label>
+                <input type="text" id="xSubject" name="xSubject" value="d45e64ae-0f99-44e5-b04e-3d6fa54e9fd7" required>
+            </div>
+
+            <div class="form-group">
+                <label for="authToken">Authorization Token:</label>
+                <textarea id="authToken" name="authToken" rows="4" required>eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJla3NFWEVua3loUkgtUnpNVTZONE5yV3BjLVc5dUY5UXJXaWNPTGNxUkZrIn0.eyJleHAiOjE3NjM0MzM2MTQsImlhdCI6MTc2MzQzMzMxNCwianRpIjoiYzUxNTA1YTMtZWE3OS00YTVmLTk3NDQtZDQyOGRiNDQyNjM2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9yZXZvIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImQ0NWU2NGFlLTBmOTktNDRlNS1iMDRlLTNkNmZhNTRlOWZkNyIsInR5cCI6IkJlYXJlciIsImF6cCI6InJldm8tcGxheXdyaWdodC1zZXJ2aWNlLWFjY291bnQtY2xpZW50IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcmV2byIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudEhvc3QiOiIxNzIuMjEuMC4xIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LXJldm8tcGxheXdyaWdodC1zZXJ2aWNlLWFjY291bnQtY2xpZW50IiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4yMS4wLjEiLCJjbGllbnRfaWQiOiJyZXZvLXBsYXl3cmlnaHQtc2VydmljZS1hY2NvdW50LWNsaWVudCJ9.iD0-pHAm1cUKHuBdLKduEP-m_OfFmQSRgcb42W76mEcff51sSY-0DYpi9kk9b5W2n-Qszonv3BZE352DTCwwPsNo2Hn2NN9Qq90aNEYNSj7Sp5LYmNEfKR9fx2CCUNgA5w3TDCxOSBbxXJWtvZiDhfqcAK0X-lUw1DQaS46cgKVTPLLDbdvdEFqqiT9C2F_oYqd-BSHZVzPvn_rTbUG5MEmkRJl2wFgvGOdG60vp9pYyw-6s44C13zCvYOe3HNq-EKmzKaiJ18fdaoeTpnXhOlPg42h41WzqALfonOSi3JNzRY9PRLfFze0a9k4-aqraxLq7suAHPxwpZHQAeAszQg</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="apiUrl">API URL:</label>
+                <input type="text" id="apiUrl" name="apiUrl" value="http://localhost:8080" required>
+            </div>
+
+            <button type="submit" id="submitBtn">Submit</button>
+        </form>
+
+        <div id="statusContainer" class="status-container">
+            <div id="statusMessage" class="status-message"></div>
+            <div id="progressBar" class="progress-bar" style="display: none;">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div id="logContainer" class="log-container">
+            <h3>Activity Log</h3>
+            <div id="logMessages"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
