@@ -6,6 +6,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import realApiService from '../services/realApiService';
 import websocketService from '../services/websocketService';
+import config from '../config/env';
 import type { WebSocketStatus, WebSocketMessage } from '../types/websocket.types';
 
 type OutcomeType = 'mfa_needed' | 'success' | 'fail' | null;
@@ -149,11 +150,21 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
       console.log('Starting WebSocket connection with status check...');
 
+      // Construct WebSocket URL with query parameters
+      const wsBaseUrl = config.websocket.url;
+      const wsUrl = `${wsBaseUrl}?client=${encodeURIComponent(integrationId)}&verificationId=${encodeURIComponent(integrationId)}`;
+
+      console.group('🔌 WebSocket Connection Details');
+      console.log('Integration ID:', integrationId);
+      console.log('Base WebSocket URL:', wsBaseUrl);
+      console.log('Full WebSocket URL:', wsUrl);
+      console.groupEnd();
+
       // Try to connect to WebSocket with status check - 10 retries and 30-second delays
       const wsConnected = await websocketService.connectWithStatusCheck(
         integrationId,
         (id: string) => realApiService.checkIntegrationStatus(id),
-        'ws://localhost:8080/ws',
+        wsUrl,
         10,
         30000
       );
