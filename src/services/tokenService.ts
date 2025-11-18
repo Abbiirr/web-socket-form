@@ -149,6 +149,25 @@ class TokenService {
       ...decoded,
     };
   }
+
+  /**
+   * Get subject (sub) from token for X-Subject header
+   */
+  getSubject(): string | null {
+    const token = this.getAccessToken();
+    if (!token) {
+      console.warn('No access token found for extracting subject');
+      return null;
+    }
+
+    const decoded = this.decodeToken(token);
+    if (!decoded || !decoded.sub) {
+      console.warn('No subject found in token');
+      return null;
+    }
+
+    return decoded.sub;
+  }
 }
 
 export default new TokenService();

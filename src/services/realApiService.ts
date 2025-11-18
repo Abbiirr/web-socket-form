@@ -102,6 +102,11 @@ class RealApiService {
     teamId: string;
   }): Promise<any> {
     try {
+      const subject = tokenService.getSubject();
+      if (!subject) {
+        throw new Error('No subject found in token. Please ensure you are authenticated.');
+      }
+
       const payload = {
         data: {
           platform: 'jobstreet',
@@ -120,18 +125,72 @@ class RealApiService {
         },
       };
 
+      console.group('📤 Verify Integration API Request');
+      console.log('Subject (from token):', subject);
+      console.log('Payload:', payload);
+      console.groupEnd();
+
       const response = await this.client.post(
         '/api/v1/common/private/integration/verify',
         payload,
         {
           headers: {
             'accept': '*/*',
-            'X-Subject': 'd45e64ae-0f99-44e5-b04e-3d6fa54e9fd7',
+            'X-Subject': subject,
           },
         }
       );
       return response.data;
     } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Check integration verification status
+   * Returns the status of integration verification process
+   */
+  async checkIntegrationStatus(integrationId: string): Promise<any> {
+    try {
+      const subject = tokenService.getSubject();
+      if (!subject) {
+        throw new Error('No subject found in token. Please ensure you are authenticated.');
+      }
+
+      console.group('🔍 Checking Integration Status API');
+      console.log('Integration ID:', integrationId);
+      console.log('Subject (from token):', subject);
+      console.log('Endpoint:', '/api/v1/common/private/integration/verify/status');
+      console.log('Timestamp:', new Date().toISOString());
+      console.groupEnd();
+
+      const response = await this.client.post(
+        '/api/v1/common/private/integration/verify/status',
+        {
+          data: integrationId,
+        },
+        {
+          headers: {
+            'accept': '*/*',
+            'X-Subject': subject,
+          },
+        }
+      );
+
+      console.group('✅ Integration Status API Response');
+      console.log('Response:', response.data);
+      console.log('Status:', response.data?.data?.status);
+      console.log('Full Response JSON:', JSON.stringify(response.data, null, 2));
+      console.log('Timestamp:', new Date().toISOString());
+      console.groupEnd();
+
+      return response.data;
+    } catch (error) {
+      console.group('❌ Integration Status API Failed');
+      console.error('Error:', error);
+      console.log('Integration ID:', integrationId);
+      console.log('Timestamp:', new Date().toISOString());
+      console.groupEnd();
       throw this.handleError(error);
     }
   }

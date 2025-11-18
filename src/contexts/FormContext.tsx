@@ -112,7 +112,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
   /**
    * Submit form
-   * On success, waits 30 seconds, then establishes WebSocket connection with retries
+   * On success, waits 30 seconds, then checks status API before establishing WebSocket connection
    */
   const submitForm = useCallback(async (data: any): Promise<{ success: boolean; error?: string }> => {
     setError(null);
@@ -127,30 +127,45 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
       setVerifyResponse(response);
       console.log('Verify API response:', response);
 
-      // On successful API call
-      if (response) {
-        console.log('Integration verification successful, waiting 30 seconds...');
+      // Extract integration ID from response
+      const integrationId = response?.data?.id || response?.data || response?.id;
 
-        // Wait 30 seconds before attempting WebSocket connection
-        await new Promise(resolve => setTimeout(resolve, 30000));
-
-        console.log('Attempting WebSocket connection with retries...');
-        // Try to connect to WebSocket with 3 retries and 30-second delays
-        const wsConnected = await websocketService.connectWithRetry(
-          'ws://localhost:8080/ws/register',
-          3,
-          30000
-        );
-
-        if (!wsConnected) {
-          const errorMessage = 'Failed to establish WebSocket connection after 3 attempts';
-          setError(errorMessage);
-          setLoading(false);
-          return { success: false, error: errorMessage };
-        }
-
-        console.log('WebSocket connected successfully');
+      if (!integrationId) {
+        const errorMessage = 'No integration ID received from verification API';
+        console.error(errorMessage, 'Response:', response);
+        setError(errorMessage);
+        setLoading(false);
+        return { success: false, error: errorMessage };
       }
+
+      console.group('📋 Integration Verification Response');
+      console.log('Integration ID:', integrationId);
+      console.log('Full Response:', response);
+      console.log('Waiting 30 seconds before starting status checks...');
+      console.groupEnd();
+
+      // Wait 30 seconds before attempting WebSocket connection
+      await new Promise(resolve => setTimeout(resolve, 30000));
+
+      console.log('Starting WebSocket connection with status check...');
+
+      // Try to connect to WebSocket with status check - 10 retries and 30-second delays
+      const wsConnected = await websocketService.connectWithStatusCheck(
+        integrationId,
+        (id: string) => realApiService.checkIntegrationStatus(id),
+        'ws://localhost:8080/ws',
+        10,
+        30000
+      );
+
+      if (!wsConnected) {
+        const errorMessage = 'Failed to establish WebSocket connection after 10 attempts (status check did not return SUCCESS)';
+        setError(errorMessage);
+        setLoading(false);
+        return { success: false, error: errorMessage };
+      }
+
+      console.log('WebSocket connected successfully');
 
       setLoading(false);
       return { success: true };

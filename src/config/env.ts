@@ -35,7 +35,7 @@ export const config: Config = {
   websocket: {
     url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws'),
     reconnectInterval: 3000, // 3 seconds
-    maxReconnectAttempts: 5,
+    maxReconnectAttempts: 10,
   },
 };
 
