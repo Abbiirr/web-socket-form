@@ -5,9 +5,12 @@
 export type WebSocketStatus = 'disconnected' | 'connecting' | 'connected' | 'error' | 'closed';
 
 export interface WebSocketMessage {
-  type: string;
+  type?: string;
   payload?: any;
   timestamp?: number;
+  status?: string;
+  message?: string;
+  [key: string]: any;
 }
 
 export interface WebSocketConfig {

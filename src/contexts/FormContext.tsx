@@ -66,6 +66,28 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
   const handleWebSocketMessage = useCallback((message: WebSocketMessage) => {
     console.log('Form context received WebSocket message:', message);
 
+    // Handle messages with 'status' field (e.g., {'status': 'success'})
+    if (message.status) {
+      console.log('Message with status field:', message.status);
+
+      if (message.status === 'success') {
+        console.log('Registration successful (status field)');
+        setOutcome('success');
+        setOutcomeData(message);
+        setError(null);
+        setLoading(false);
+        return;
+      } else if (message.status === 'fail' || message.status === 'failed') {
+        console.log('Registration failed (status field)');
+        setOutcome('fail');
+        setOutcomeData(message);
+        setError(message.message || 'Registration failed');
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Handle messages with 'type' field
     switch (message.type) {
       case 'mfa_needed':
         console.log('MFA required:', message.payload);
