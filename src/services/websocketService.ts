@@ -105,11 +105,17 @@ class WebSocketService {
 
         this.ws.onmessage = (event) => {
           try {
+            console.group('📨 WebSocket Message Received');
+            console.log('Raw Data:', event.data);
             const message = JSON.parse(event.data) as WebSocketMessage;
-            console.log('📨 Message:', message);
+            console.log('Parsed Message:', message);
+            console.log('Message Type:', message.type);
+            console.log('Message Payload:', message.payload);
+            console.groupEnd();
             this.handleMessage(message);
           } catch (error) {
-            console.error('Failed to parse message:', error);
+            console.error('Failed to parse WebSocket message:', error);
+            console.error('Raw data:', event.data);
           }
         };
       } catch (error) {

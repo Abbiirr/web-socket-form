@@ -72,6 +72,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
         setOutcome('mfa_needed');
         setOutcomeData(message.payload);
         setError(null);
+        setLoading(false);
         break;
 
       case 'success':
@@ -79,6 +80,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
         setOutcome('success');
         setOutcomeData(message.payload);
         setError(null);
+        setLoading(false);
         break;
 
       case 'fail':
@@ -86,6 +88,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
         setOutcome('fail');
         setOutcomeData(message.payload);
         setError(message.payload?.message || 'Registration failed');
+        setLoading(false);
         break;
 
       case 'UPDATE_STATUS':
@@ -103,6 +106,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
       case 'ERROR':
         setError(message.payload?.message || 'An error occurred');
+        setLoading(false);
         break;
 
       default:
@@ -165,9 +169,9 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
         return { success: false, error: errorMessage };
       }
 
-      console.log('WebSocket connected successfully');
+      console.log('WebSocket connected successfully - waiting for response...');
 
-      setLoading(false);
+      // Keep loading true - will be set to false when we receive outcome message
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Form submission failed';
