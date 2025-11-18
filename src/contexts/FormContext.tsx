@@ -110,24 +110,52 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
   /**
    * Submit form
-   * On success, establishes WebSocket connection
+   * On success, waits 30 seconds then attempts WebSocket connection with retries
    */
   const submitForm = useCallback(async (data: any): Promise<{ success: boolean; error?: string }> => {
     setError(null);
     setLoading(true);
+    setOutcome(null);
+    setOutcomeData(null);
 
     try {
-      // Submit form (token is automatically added by axios interceptor)
+      // Submit form (token and X-Subject are automatically added by axios interceptor)
       const response = await realApiService.submitForm(data);
+      console.log('Form submission successful:', response);
 
-      // On successful API call, connect WebSocket
+      // On successful API call, wait 30 seconds then connect WebSocket
       if (response) {
-        try {
-          await connectWebSocket();
-          console.log('WebSocket connected after successful form submission');
-        } catch (wsError) {
-          console.error('WebSocket connection failed:', wsError);
-          // Don't fail the whole request if WebSocket fails
+        console.log('Waiting 30 seconds before attempting WebSocket connection...');
+        await new Promise(resolve => setTimeout(resolve, 30000));
+
+        // Try to connect WebSocket with retry logic
+        let wsConnected = false;
+        const maxRetries = 3;
+        const retryDelay = 30000; // 30 seconds
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            console.log(`WebSocket connection attempt ${attempt}/${maxRetries}...`);
+            await connectWebSocket();
+            console.log('WebSocket connected successfully');
+            wsConnected = true;
+            break;
+          } catch (wsError) {
+            console.error(`WebSocket connection attempt ${attempt} failed:`, wsError);
+
+            if (attempt < maxRetries) {
+              console.log(`Waiting 30 seconds before retry ${attempt + 1}...`);
+              await new Promise(resolve => setTimeout(resolve, retryDelay));
+            }
+          }
+        }
+
+        if (!wsConnected) {
+          setOutcome('fail');
+          setOutcomeData({ message: 'Failed to establish WebSocket connection after 3 attempts' });
+          setError('Failed to establish connection. Please try again later.');
+          setLoading(false);
+          return { success: false, error: 'WebSocket connection failed after retries' };
         }
       }
 
@@ -136,6 +164,8 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Form submission failed';
       setError(errorMessage);
+      setOutcome('fail');
+      setOutcomeData({ message: errorMessage });
       setLoading(false);
       return { success: false, error: errorMessage };
     }

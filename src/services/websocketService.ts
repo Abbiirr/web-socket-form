@@ -68,7 +68,7 @@ class WebSocketService {
           this.ws = null;
 
           // Attempt reconnection if needed
-          if (this.shouldReconnect && this.reconnectAttempts < config.websocket.maxReconnectAttempts) {
+          if (this.shouldReconnect && this.reconnectAttempts < config.websocket.retryAttempts) {
             this.scheduleReconnect();
           }
         };
@@ -158,12 +158,12 @@ class WebSocketService {
     }
 
     this.reconnectAttempts++;
-    const delay = config.websocket.reconnectInterval * this.reconnectAttempts;
+    const delay = config.websocket.retryDelay;
 
     console.log(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`);
 
     this.reconnectTimer = setTimeout(() => {
-      console.log(`Reconnecting... (attempt ${this.reconnectAttempts}/${config.websocket.maxReconnectAttempts})`);
+      console.log(`Reconnecting... (attempt ${this.reconnectAttempts}/${config.websocket.retryAttempts})`);
       this.connect().catch((error) => {
         console.error('Reconnection failed:', error);
       });

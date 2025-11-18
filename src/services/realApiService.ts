@@ -26,12 +26,18 @@ class RealApiService {
    * Setup request and response interceptors
    */
   private setupInterceptors(): void {
-    // Request interceptor - add auth token
+    // Request interceptor - add auth token and X-Subject header
     this.client.interceptors.request.use(
       (config) => {
         const token = tokenService.getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+
+          // Extract subject from token and add as X-Subject header
+          const decodedToken = tokenService.decodeToken(token);
+          if (decodedToken?.sub) {
+            config.headers['X-Subject'] = decodedToken.sub;
+          }
         }
         return config;
       },
@@ -78,12 +84,30 @@ class RealApiService {
   }
 
   /**
-   * Submit form data
-   * This is the main entry point for your form submission
+   * Submit form data for integration verification
+   * Transforms form data to match the integration verify API format
    */
   async submitForm(data: any): Promise<any> {
     try {
-      const response = await this.client.post('/api/submit', data);
+      // Transform form data to integration verify format
+      const payload = {
+        data: {
+          platform: config.integration.platform,
+          strategy: config.integration.strategy,
+          platformMetadata: {
+            username: data.email,
+            password: data.password,
+            team_name: data.name || data.team_name || '',
+            team_id: data.team_id || '',
+          },
+          strategyMetadata: {
+            loginUrl: config.integration.loginUrl,
+            description: 'Login using JobStreet employer account username & password',
+          },
+        },
+      };
+
+      const response = await this.client.post(config.api.verifyEndpoint, payload);
       return response.data;
     } catch (error) {
       throw this.handleError(error);

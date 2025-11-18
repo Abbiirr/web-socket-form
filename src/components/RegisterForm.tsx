@@ -14,6 +14,8 @@ interface RegistrationData {
   name: string;
   email: string;
   password: string;
+  team_name: string;
+  team_id: string;
 }
 
 const RegisterForm: React.FC = () => {
@@ -22,6 +24,8 @@ const RegisterForm: React.FC = () => {
     name: '',
     email: '',
     password: '',
+    team_name: '',
+    team_id: '',
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -122,6 +126,8 @@ const RegisterForm: React.FC = () => {
           name: '',
           email: '',
           password: '',
+          team_name: '',
+          team_id: '',
         });
       } else {
         setSubmitStatus('error');
@@ -312,6 +318,41 @@ const RegisterForm: React.FC = () => {
               </button>
             </div>
             <p className="form-hint">Use at least 8 characters</p>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="team_name" className="form-label">
+              Team/Company Name
+            </label>
+            <input
+              type="text"
+              id="team_name"
+              name="team_name"
+              className="form-input"
+              placeholder="Your company name"
+              value={formData.team_name}
+              onChange={handleInputChange}
+              disabled={loading}
+              autoComplete="organization"
+            />
+            <p className="form-hint">Optional: Your Jobstreet team or company name</p>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="team_id" className="form-label">
+              Team ID
+            </label>
+            <input
+              type="text"
+              id="team_id"
+              name="team_id"
+              className="form-input"
+              placeholder="Your team ID"
+              value={formData.team_id}
+              onChange={handleInputChange}
+              disabled={loading}
+            />
+            <p className="form-hint">Optional: Your Jobstreet team ID</p>
           </div>
 
           {(statusMessage || error) && (

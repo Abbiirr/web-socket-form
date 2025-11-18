@@ -5,18 +5,26 @@
 
 interface ApiConfig {
   baseURL: string;
+  verifyEndpoint: string;
   timeout: number;
 }
 
 interface WebSocketConfig {
   url: string;
-  reconnectInterval: number;
-  maxReconnectAttempts: number;
+  retryDelay: number;
+  retryAttempts: number;
+}
+
+interface IntegrationConfig {
+  platform: string;
+  strategy: string;
+  loginUrl: string;
 }
 
 interface Config {
   api: ApiConfig;
   websocket: WebSocketConfig;
+  integration: IntegrationConfig;
 }
 
 const getEnvVar = (key: string, defaultValue: string = ''): string => {
@@ -30,12 +38,18 @@ const getEnvVar = (key: string, defaultValue: string = ''): string => {
 export const config: Config = {
   api: {
     baseURL: getEnvVar('VITE_API_BASE_URL', 'http://localhost:8080'),
+    verifyEndpoint: getEnvVar('VITE_API_VERIFY_ENDPOINT', '/api/v1/common/private/integration/verify'),
     timeout: parseInt(getEnvVar('VITE_API_TIMEOUT', '30000'), 10),
   },
   websocket: {
-    url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws'),
-    reconnectInterval: 3000, // 3 seconds
-    maxReconnectAttempts: 5,
+    url: getEnvVar('VITE_WS_URL', 'ws://localhost:8080/ws/register'),
+    retryDelay: parseInt(getEnvVar('VITE_WS_RETRY_DELAY', '30000'), 10),
+    retryAttempts: parseInt(getEnvVar('VITE_WS_RETRY_ATTEMPTS', '3'), 10),
+  },
+  integration: {
+    platform: getEnvVar('VITE_PLATFORM', 'jobstreet'),
+    strategy: getEnvVar('VITE_STRATEGY', 'USERNAME_PASSWORD'),
+    loginUrl: getEnvVar('VITE_LOGIN_URL', 'https://my.employer.seek.com/dashboard'),
   },
 };
 
