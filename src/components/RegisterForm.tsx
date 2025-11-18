@@ -14,6 +14,8 @@ interface RegistrationData {
   name: string;
   email: string;
   password: string;
+  team_name: string;
+  team_id: string;
 }
 
 const RegisterForm: React.FC = () => {
@@ -22,6 +24,8 @@ const RegisterForm: React.FC = () => {
     name: '',
     email: '',
     password: '',
+    team_name: '',
+    team_id: '',
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -107,7 +111,26 @@ const RegisterForm: React.FC = () => {
     }
 
     try {
-      const result = await submitForm(formData);
+      // Transform form data to required format
+      const transformedData = {
+        data: {
+          platform: "jobstreet",
+          strategy: "USERNAME_PASSWORD",
+          platformMetadata: {
+            name: formData.name,
+            username: formData.email,
+            password: formData.password,
+            team_name: formData.team_name,
+            team_id: formData.team_id,
+          },
+          strategyMetadata: {
+            loginUrl: "https://my.employer.seek.com/dashboard",
+            description: "Login using JobStreet employer account username & password"
+          }
+        }
+      };
+
+      const result = await submitForm(transformedData);
 
       if (result.success) {
         setSubmitStatus('success');
@@ -122,6 +145,8 @@ const RegisterForm: React.FC = () => {
           name: '',
           email: '',
           password: '',
+          team_name: '',
+          team_id: '',
         });
       } else {
         setSubmitStatus('error');
@@ -312,6 +337,40 @@ const RegisterForm: React.FC = () => {
               </button>
             </div>
             <p className="form-hint">Use at least 8 characters</p>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="team_name" className="form-label">
+              Team Name *
+            </label>
+            <input
+              type="text"
+              id="team_name"
+              name="team_name"
+              className="form-input"
+              placeholder="Your team name"
+              value={formData.team_name}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="team_id" className="form-label">
+              Team ID *
+            </label>
+            <input
+              type="text"
+              id="team_id"
+              name="team_id"
+              className="form-input"
+              placeholder="Your team ID"
+              value={formData.team_id}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+            />
           </div>
 
           {(statusMessage || error) && (
