@@ -92,11 +92,44 @@ class RealApiService {
 
   /**
    * Verify integration
-   * Calls the verify endpoint after form submission
+   * Submits integration data to the verify endpoint
    */
-  async verifyIntegration(data: any): Promise<any> {
+  async verifyIntegration(data: {
+    name: string;
+    username: string;
+    password: string;
+    teamName: string;
+    teamId: string;
+  }): Promise<any> {
     try {
-      const response = await this.client.post('/api/v1/common/private/integration/verify', data);
+      const payload = {
+        data: {
+          platform: 'jobstreet',
+          strategy: 'USERNAME_PASSWORD',
+          platformMetadata: {
+            name: data.name,
+            username: data.username,
+            password: data.password,
+            team_name: data.teamName,
+            team_id: data.teamId,
+          },
+          strategyMetadata: {
+            loginUrl: 'https://my.employer.seek.com/dashboard',
+            description: 'Login using JobStreet employer account username & password',
+          },
+        },
+      };
+
+      const response = await this.client.post(
+        '/api/v1/common/private/integration/verify',
+        payload,
+        {
+          headers: {
+            'accept': '*/*',
+            'X-Subject': 'd45e64ae-0f99-44e5-b04e-3d6fa54e9fd7',
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error);

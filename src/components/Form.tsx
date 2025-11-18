@@ -8,14 +8,20 @@ import { useForm } from '../contexts/FormContext';
 import '../styles/Form.css';
 
 interface FormData {
-  [key: string]: string;
+  name: string;
+  username: string;
+  password: string;
+  teamName: string;
+  teamId: string;
 }
 
 const Form: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    email: '',
     name: '',
-    message: '',
+    username: '',
+    password: '',
+    teamName: '',
+    teamId: '',
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -49,9 +55,11 @@ const Form: React.FC = () => {
 
         // Reset form
         setFormData({
-          email: '',
           name: '',
-          message: '',
+          username: '',
+          password: '',
+          teamName: '',
+          teamId: '',
         });
       } else {
         setSubmitStatus('error');
@@ -116,23 +124,6 @@ const Form: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="main-form">
           <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="form-input"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleInputChange}
-              disabled={loading}
-              required
-            />
-          </div>
-
-          <div className="form-group">
             <label htmlFor="name" className="form-label">
               Name
             </label>
@@ -150,18 +141,69 @@ const Form: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="message" className="form-label">
-              Message
+            <label htmlFor="username" className="form-label">
+              Email
             </label>
-            <textarea
-              id="message"
-              name="message"
-              className="form-input form-textarea"
-              placeholder="Your message"
-              value={formData.message}
+            <input
+              type="email"
+              id="username"
+              name="username"
+              className="form-input"
+              placeholder="your.email@company.com"
+              value={formData.username}
               onChange={handleInputChange}
               disabled={loading}
-              rows={4}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="form-input"
+              placeholder="Your password"
+              value={formData.password}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="teamName" className="form-label">
+              Team Name
+            </label>
+            <input
+              type="text"
+              id="teamName"
+              name="teamName"
+              className="form-input"
+              placeholder="REVO GLOBAL SDN. BHD."
+              value={formData.teamName}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="teamId" className="form-label">
+              Team ID
+            </label>
+            <input
+              type="text"
+              id="teamId"
+              name="teamId"
+              className="form-input"
+              placeholder="62541561"
+              value={formData.teamId}
+              onChange={handleInputChange}
+              disabled={loading}
               required
             />
           </div>
@@ -199,9 +241,10 @@ const Form: React.FC = () => {
           <div className="info-box">
             <h3>How It Works</h3>
             <ol className="steps-list">
-              <li>Fill in the form fields</li>
-              <li>Submit → API call to <code>/api/submit</code></li>
-              <li>On success → WebSocket connection established</li>
+              <li>Fill in your JobStreet employer credentials</li>
+              <li>Submit → API call to <code>/api/v1/common/private/integration/verify</code></li>
+              <li>On success → Wait 30 seconds</li>
+              <li>WebSocket connection to <code>/ws/register</code> (3 retries with 30s delay)</li>
               <li>Listen for real-time updates from server</li>
             </ol>
           </div>

@@ -12,20 +12,20 @@ import '../styles/Form.css';
 
 interface RegistrationData {
   name: string;
-  email: string;
+  username: string;
   password: string;
-  team_name: string;
-  team_id: string;
+  teamName: string;
+  teamId: string;
 }
 
 const RegisterForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState<RegistrationData>({
     name: '',
-    email: '',
+    username: '',
     password: '',
-    team_name: '',
-    team_id: '',
+    teamName: '',
+    teamId: '',
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -72,14 +72,14 @@ const RegisterForm: React.FC = () => {
       return false;
     }
 
-    if (!formData.email.trim()) {
+    if (!formData.username.trim()) {
       setSubmitStatus('error');
       setStatusMessage('Please enter your email');
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(formData.username)) {
       setSubmitStatus('error');
       setStatusMessage('Please enter a valid email address');
       return false;
@@ -111,26 +111,7 @@ const RegisterForm: React.FC = () => {
     }
 
     try {
-      // Transform form data to required format
-      const transformedData = {
-        data: {
-          platform: "jobstreet",
-          strategy: "USERNAME_PASSWORD",
-          platformMetadata: {
-            name: formData.name,
-            username: formData.email,
-            password: formData.password,
-            team_name: formData.team_name,
-            team_id: formData.team_id,
-          },
-          strategyMetadata: {
-            loginUrl: "https://my.employer.seek.com/dashboard",
-            description: "Login using JobStreet employer account username & password"
-          }
-        }
-      };
-
-      const result = await submitForm(transformedData);
+      const result = await submitForm(formData);
 
       if (result.success) {
         setSubmitStatus('success');
@@ -143,10 +124,10 @@ const RegisterForm: React.FC = () => {
         // Reset form
         setFormData({
           name: '',
-          email: '',
+          username: '',
           password: '',
-          team_name: '',
-          team_id: '',
+          teamName: '',
+          teamId: '',
         });
       } else {
         setSubmitStatus('error');
@@ -258,16 +239,16 @@ const RegisterForm: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email" className="form-label">
+            <label htmlFor="username" className="form-label">
               Email Address *
             </label>
             <input
               type="email"
-              id="email"
-              name="email"
+              id="username"
+              name="username"
               className="form-input"
               placeholder="you@example.com"
-              value={formData.email}
+              value={formData.username}
               onChange={handleInputChange}
               disabled={loading}
               required
@@ -340,16 +321,16 @@ const RegisterForm: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="team_name" className="form-label">
+            <label htmlFor="teamName" className="form-label">
               Team Name *
             </label>
             <input
               type="text"
-              id="team_name"
-              name="team_name"
+              id="teamName"
+              name="teamName"
               className="form-input"
               placeholder="Your team name"
-              value={formData.team_name}
+              value={formData.teamName}
               onChange={handleInputChange}
               disabled={loading}
               required
@@ -357,16 +338,16 @@ const RegisterForm: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="team_id" className="form-label">
+            <label htmlFor="teamId" className="form-label">
               Team ID *
             </label>
             <input
               type="text"
-              id="team_id"
-              name="team_id"
+              id="teamId"
+              name="teamId"
               className="form-input"
               placeholder="Your team ID"
-              value={formData.team_id}
+              value={formData.teamId}
               onChange={handleInputChange}
               disabled={loading}
               required
