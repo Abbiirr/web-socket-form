@@ -3,7 +3,7 @@
  * Main component for multi-room chat application
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ChatRoom from './ChatRoom';
 import RoomList from './RoomList';
 import chatWebSocketService from '../services/chatWebSocketService';
@@ -66,6 +66,21 @@ const ChatApp: React.FC = () => {
     };
   }, []);
 
+  // Helper function to add a message to a room (with deduplication)
+  const addMessageToRoom = useCallback((roomId: string, message: ChatMessage) => {
+    setMessagesByRoom((prev) => {
+      const existingMessages = prev[roomId] || [];
+      // Check if message already exists
+      if (existingMessages.some(msg => msg.id === message.id)) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [roomId]: [...existingMessages, message],
+      };
+    });
+  }, []);
+
   useEffect(() => {
     if (connectionStatus !== 'connected') return;
 
@@ -84,17 +99,14 @@ const ChatApp: React.FC = () => {
             timestamp: payload.timestamp,
           };
 
-          setMessagesByRoom((prev) => ({
-            ...prev,
-            [payload.roomId]: [...(prev[payload.roomId] || []), chatMessage],
-          }));
+          addMessageToRoom(payload.roomId, chatMessage);
           break;
         }
 
         case 'USER_JOINED': {
           const payload = message.payload as UserJoinedPayload;
           const systemMessage: ChatMessage = {
-            id: `system-${payload.timestamp}`,
+            id: `join-${payload.userId}-${payload.timestamp}`,
             roomId: payload.roomId,
             userId: 'system',
             username: 'System',
@@ -102,10 +114,7 @@ const ChatApp: React.FC = () => {
             timestamp: payload.timestamp,
           };
 
-          setMessagesByRoom((prev) => ({
-            ...prev,
-            [payload.roomId]: [...(prev[payload.roomId] || []), systemMessage],
-          }));
+          addMessageToRoom(payload.roomId, systemMessage);
 
           setMemberCountByRoom((prev) => ({
             ...prev,
@@ -117,7 +126,7 @@ const ChatApp: React.FC = () => {
         case 'USER_LEFT': {
           const payload = message.payload as UserLeftPayload;
           const systemMessage: ChatMessage = {
-            id: `system-${payload.timestamp}`,
+            id: `leave-${payload.userId}-${payload.timestamp}`,
             roomId: payload.roomId,
             userId: 'system',
             username: 'System',
@@ -125,10 +134,7 @@ const ChatApp: React.FC = () => {
             timestamp: payload.timestamp,
           };
 
-          setMessagesByRoom((prev) => ({
-            ...prev,
-            [payload.roomId]: [...(prev[payload.roomId] || []), systemMessage],
-          }));
+          addMessageToRoom(payload.roomId, systemMessage);
 
           setMemberCountByRoom((prev) => ({
             ...prev,
@@ -161,9 +167,9 @@ const ChatApp: React.FC = () => {
     });
 
     return unsubscribe;
-  }, [connectionStatus]);
+  }, [connectionStatus, addMessageToRoom]);
 
-  const handleConnect = async (e: React.FormEvent) => {
+  const handleConnect = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usernameInput.trim()) {
       alert('Please enter a username');
@@ -177,48 +183,55 @@ const ChatApp: React.FC = () => {
       console.error('Failed to connect:', error);
       alert('Failed to connect to chat server. Please check the URL and try again.');
     }
-  };
+  }, [usernameInput, wsUrl]);
 
-  const handleDisconnect = () => {
+  const handleDisconnect = useCallback(() => {
     chatWebSocketService.disconnect();
     setUsername('');
     setJoinedRoomIds([]);
     setActiveRoomId(null);
     setMessagesByRoom({});
     setMemberCountByRoom({});
-  };
+  }, []);
 
-  const handleJoinRoom = (roomId: string) => {
-    if (!joinedRoomIds.includes(roomId)) {
-      chatWebSocketService.joinRoom(roomId);
-      setJoinedRoomIds((prev) => [...prev, roomId]);
+  const handleJoinRoom = useCallback((roomId: string) => {
+    setJoinedRoomIds((prev) => {
+      if (!prev.includes(roomId)) {
+        chatWebSocketService.joinRoom(roomId);
+        setActiveRoomId(roomId);
+        return [...prev, roomId];
+      }
       setActiveRoomId(roomId);
-    } else {
-      setActiveRoomId(roomId);
-    }
-  };
+      return prev;
+    });
+  }, []);
 
-  const handleLeaveRoom = (roomId: string) => {
+  const handleLeaveRoom = useCallback((roomId: string) => {
     chatWebSocketService.leaveRoom(roomId);
-    setJoinedRoomIds((prev) => prev.filter((id) => id !== roomId));
-
-    if (activeRoomId === roomId) {
-      const remainingRooms = joinedRoomIds.filter((id) => id !== roomId);
-      setActiveRoomId(remainingRooms.length > 0 ? remainingRooms[0] : null);
-    }
+    setJoinedRoomIds((prev) => {
+      const updated = prev.filter((id) => id !== roomId);
+      // Update active room if we're leaving the current one
+      setActiveRoomId((currentActive) => {
+        if (currentActive === roomId) {
+          return updated.length > 0 ? updated[0] : null;
+        }
+        return currentActive;
+      });
+      return updated;
+    });
 
     setMessagesByRoom((prev) => {
       const updated = { ...prev };
       delete updated[roomId];
       return updated;
     });
-  };
+  }, []);
 
-  const handleSendMessage = (roomId: string, message: string) => {
+  const handleSendMessage = useCallback((roomId: string, message: string) => {
     chatWebSocketService.sendMessage(roomId, message);
-  };
+  }, []);
 
-  const handleCreateRoom = (name: string, description?: string) => {
+  const handleCreateRoom = useCallback((name: string, description?: string) => {
     const newRoom: ChatRoomType = {
       id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
@@ -227,8 +240,15 @@ const ChatApp: React.FC = () => {
       createdAt: Date.now(),
     };
 
-    setAvailableRooms((prev) => [...prev, newRoom]);
-  };
+    setAvailableRooms((prev) => {
+      // Prevent duplicate rooms
+      if (prev.some(room => room.id === newRoom.id)) {
+        alert('A room with this name already exists');
+        return prev;
+      }
+      return [...prev, newRoom];
+    });
+  }, []);
 
   if (connectionStatus === 'disconnected' || connectionStatus === 'error') {
     return (
