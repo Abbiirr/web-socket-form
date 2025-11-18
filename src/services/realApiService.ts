@@ -91,6 +91,19 @@ class RealApiService {
   }
 
   /**
+   * Verify integration
+   * Calls the verify endpoint after form submission
+   */
+  async verifyIntegration(data: any): Promise<any> {
+    try {
+      const response = await this.client.post('/api/v1/common/private/integration/verify', data);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Request magic link
    */
   async requestMagicLink(email: string): Promise<any> {

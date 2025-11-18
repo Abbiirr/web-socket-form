@@ -17,6 +17,7 @@ interface FormContextType {
   wsConnected: boolean;
   outcome: OutcomeType;
   outcomeData: any;
+  verifyResponse: any;
   submitForm: (data: any) => Promise<{ success: boolean; error?: string }>;
   connectWebSocket: (url?: string) => Promise<void>;
   disconnectWebSocket: () => void;
@@ -36,6 +37,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const [outcome, setOutcome] = useState<OutcomeType>(null);
   const [outcomeData, setOutcomeData] = useState<any>(null);
+  const [verifyResponse, setVerifyResponse] = useState<any>(null);
 
   /**
    * Initialize WebSocket listeners on mount
@@ -110,7 +112,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
   /**
    * Submit form
-   * On success, establishes WebSocket connection
+   * On success, establishes WebSocket connection and calls verify API
    */
   const submitForm = useCallback(async (data: any): Promise<{ success: boolean; error?: string }> => {
     setError(null);
@@ -119,6 +121,16 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     try {
       // Submit form (token is automatically added by axios interceptor)
       const response = await realApiService.submitForm(data);
+
+      // Call verify integration API and store the response
+      try {
+        const verifyData = await realApiService.verifyIntegration(data);
+        setVerifyResponse(verifyData);
+        console.log('Verify API response:', verifyData);
+      } catch (verifyError) {
+        console.error('Verify API call failed:', verifyError);
+        // Don't fail the whole request if verify fails
+      }
 
       // On successful API call, connect WebSocket
       if (response) {
@@ -180,6 +192,7 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
     wsConnected,
     outcome,
     outcomeData,
+    verifyResponse,
     submitForm,
     connectWebSocket,
     disconnectWebSocket,
