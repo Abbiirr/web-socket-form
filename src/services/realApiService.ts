@@ -95,29 +95,27 @@ class RealApiService {
    * Submits integration data to the verify endpoint
    */
   async verifyIntegration(data: {
-    platform: string;
-    strategy: string;
+    name: string;
     username: string;
     password: string;
     teamName: string;
     teamId: string;
-    loginUrl: string;
-    description: string;
   }): Promise<any> {
     try {
       const payload = {
         data: {
-          platform: data.platform,
-          strategy: data.strategy,
+          platform: 'jobstreet',
+          strategy: 'USERNAME_PASSWORD',
           platformMetadata: {
+            name: data.name,
             username: data.username,
             password: data.password,
             team_name: data.teamName,
             team_id: data.teamId,
           },
           strategyMetadata: {
-            loginUrl: data.loginUrl,
-            description: data.description,
+            loginUrl: 'https://my.employer.seek.com/dashboard',
+            description: 'Login using JobStreet employer account username & password',
           },
         },
       };

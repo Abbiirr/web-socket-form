@@ -8,26 +8,20 @@ import { useForm } from '../contexts/FormContext';
 import '../styles/Form.css';
 
 interface FormData {
-  platform: string;
-  strategy: string;
+  name: string;
   username: string;
   password: string;
   teamName: string;
   teamId: string;
-  loginUrl: string;
-  description: string;
 }
 
 const Form: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    platform: 'jobstreet',
-    strategy: 'USERNAME_PASSWORD',
+    name: '',
     username: '',
     password: '',
     teamName: '',
     teamId: '',
-    loginUrl: 'https://my.employer.seek.com/dashboard',
-    description: 'Login using JobStreet employer account username & password',
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -61,14 +55,11 @@ const Form: React.FC = () => {
 
         // Reset form
         setFormData({
-          platform: 'jobstreet',
-          strategy: 'USERNAME_PASSWORD',
+          name: '',
           username: '',
           password: '',
           teamName: '',
           teamId: '',
-          loginUrl: 'https://my.employer.seek.com/dashboard',
-          description: 'Login using JobStreet employer account username & password',
         });
       } else {
         setSubmitStatus('error');
@@ -133,8 +124,25 @@ const Form: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="main-form">
           <div className="form-group">
+            <label htmlFor="name" className="form-label">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              className="form-input"
+              placeholder="Your name"
+              value={formData.name}
+              onChange={handleInputChange}
+              disabled={loading}
+              required
+            />
+          </div>
+
+          <div className="form-group">
             <label htmlFor="username" className="form-label">
-              Username
+              Email
             </label>
             <input
               type="email"
