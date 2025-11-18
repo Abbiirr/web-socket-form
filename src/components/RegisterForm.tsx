@@ -32,7 +32,7 @@ const RegisterForm: React.FC = () => {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const { loading, error, wsStatus, wsConnected, outcome, outcomeData, submitForm } = useForm();
+  const { loading, error, wsStatus, outcome, outcomeData, submitForm } = useForm();
 
   // Extract and store bearer token from URL query parameter
   useEffect(() => {

@@ -10,7 +10,7 @@ import "../styles/Loading.css";
 
 const Loading: React.FC = () => {
   const navigate = useNavigate();
-  const { wsStatus, wsConnected, outcome, outcomeData } = useForm();
+  const { wsStatus, outcome, outcomeData } = useForm();
 
   // Handle WebSocket outcome updates
   useEffect(() => {
