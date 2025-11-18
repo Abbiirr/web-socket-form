@@ -81,6 +81,31 @@ class WebSocketService {
   }
 
   /**
+   * Connect to WebSocket with retry logic
+   * Attempts to connect up to maxAttempts times with specified delay between attempts
+   */
+  async connectWithRetry(customUrl?: string, maxAttempts: number = 3, retryDelay: number = 30000): Promise<boolean> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(`WebSocket connection attempt ${attempt}/${maxAttempts}`);
+        await this.connect(customUrl);
+        console.log('WebSocket connected successfully');
+        return true;
+      } catch (error) {
+        console.error(`WebSocket connection attempt ${attempt} failed:`, error);
+
+        if (attempt < maxAttempts) {
+          console.log(`Waiting ${retryDelay / 1000} seconds before next attempt...`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
+      }
+    }
+
+    console.error(`Failed to connect to WebSocket after ${maxAttempts} attempts`);
+    return false;
+  }
+
+  /**
    * Disconnect from WebSocket server
    */
   disconnect(): void {

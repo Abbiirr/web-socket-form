@@ -91,6 +91,54 @@ class RealApiService {
   }
 
   /**
+   * Verify integration
+   * Submits integration data to the verify endpoint
+   */
+  async verifyIntegration(data: {
+    platform: string;
+    strategy: string;
+    username: string;
+    password: string;
+    teamName: string;
+    teamId: string;
+    loginUrl: string;
+    description: string;
+  }): Promise<any> {
+    try {
+      const payload = {
+        data: {
+          platform: data.platform,
+          strategy: data.strategy,
+          platformMetadata: {
+            username: data.username,
+            password: data.password,
+            team_name: data.teamName,
+            team_id: data.teamId,
+          },
+          strategyMetadata: {
+            loginUrl: data.loginUrl,
+            description: data.description,
+          },
+        },
+      };
+
+      const response = await this.client.post(
+        '/api/v1/common/private/integration/verify',
+        payload,
+        {
+          headers: {
+            'accept': '*/*',
+            'X-Subject': 'd45e64ae-0f99-44e5-b04e-3d6fa54e9fd7',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Request magic link
    */
   async requestMagicLink(email: string): Promise<any> {

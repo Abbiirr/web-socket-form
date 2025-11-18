@@ -110,25 +110,40 @@ export const FormProvider: React.FC<FormProviderProps> = ({ children }) => {
 
   /**
    * Submit form
-   * On success, establishes WebSocket connection
+   * On success, waits 30 seconds, then establishes WebSocket connection with retries
    */
   const submitForm = useCallback(async (data: any): Promise<{ success: boolean; error?: string }> => {
     setError(null);
     setLoading(true);
 
     try {
-      // Submit form (token is automatically added by axios interceptor)
-      const response = await realApiService.submitForm(data);
+      // Submit integration verification
+      console.log('Submitting integration verification...');
+      const response = await realApiService.verifyIntegration(data);
 
-      // On successful API call, connect WebSocket
+      // On successful API call
       if (response) {
-        try {
-          await connectWebSocket();
-          console.log('WebSocket connected after successful form submission');
-        } catch (wsError) {
-          console.error('WebSocket connection failed:', wsError);
-          // Don't fail the whole request if WebSocket fails
+        console.log('Integration verification successful, waiting 30 seconds...');
+
+        // Wait 30 seconds before attempting WebSocket connection
+        await new Promise(resolve => setTimeout(resolve, 30000));
+
+        console.log('Attempting WebSocket connection with retries...');
+        // Try to connect to WebSocket with 3 retries and 30-second delays
+        const wsConnected = await websocketService.connectWithRetry(
+          'ws://localhost:8080/ws/register',
+          3,
+          30000
+        );
+
+        if (!wsConnected) {
+          const errorMessage = 'Failed to establish WebSocket connection after 3 attempts';
+          setError(errorMessage);
+          setLoading(false);
+          return { success: false, error: errorMessage };
         }
+
+        console.log('WebSocket connected successfully');
       }
 
       setLoading(false);
